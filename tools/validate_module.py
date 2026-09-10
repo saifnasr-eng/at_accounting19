@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static checks for at_account_accountant, for when no Odoo runtime is around.
+"""Static checks for scalebox_accounting, for when no Odoo runtime is around.
 
 Catches the mistakes that otherwise only surface as an install failure:
 missing data files, dangling xmlids, report actions pointing at templates that
@@ -15,7 +15,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
-MODULE = "at_account_accountant"
+MODULE = "scalebox_accounting"
 
 
 def main():

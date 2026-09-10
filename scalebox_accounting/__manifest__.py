@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "AT Full Accounting — Enterprise Accounting Features for Community",
+    "name": "Full Accounting for Odoo Community - Financial Reports, Assets, "
+            "Deferrals and Follow-ups",
     "version": "19.0.1.0.0",
     "category": "Accounting/Accounting",
+    # Bank reconciliation is deliberately absent from this line: the module
+    # does not implement it, and the description says so under "Not included".
+    # A summary is what shows on the store's search results, so it is the last
+    # place to promise something that is not there.
     "summary": (
-        "Brings Odoo Enterprise accounting features to Community: asset "
-        "management, deferred revenue/expense, bank reconciliation, "
-        "follow-ups, and financial reports."
+        "Seven printable financial reports, asset depreciation with disposal "
+        "and revaluation, deferred revenue and expense, and customer "
+        "follow-ups - on top of Community accounting."
     ),
     "description": """
 AT Full Accounting
@@ -45,8 +50,9 @@ Not included
 This module is an independent implementation. It is not affiliated with,
 endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
 """,
-    "author": "Saif Nasr — Scalebox",
-    "website": "https://github.com/saifnasr-eng/at_accounting19",
+    "author": "Scalebox For Digital Services",
+    "maintainer": "Scalebox For Digital Services",
+    "website": "https://scalebox.scbox.pro",
     # OPL-1 (Odoo Proprietary License) rather than LGPL-3: LGPL lets anyone
     # redistribute the module for free, which cannot coexist with selling it.
     "license": "OPL-1",
@@ -58,7 +64,7 @@ endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
     ],
     "data": [
         "security/ir.model.access.csv",
-        "security/at_account_accountant_security.xml",
+        "security/scalebox_accounting_security.xml",
         "data/ir_cron_data.xml",
         "report/report_templates.xml",
         "report/statement_templates.xml",

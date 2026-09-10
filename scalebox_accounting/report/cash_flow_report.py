@@ -15,7 +15,7 @@ FINANCING_TYPES = ("equity", "equity_unaffected", "liability_non_current")
 
 
 class ReportCashFlow(models.AbstractModel):
-    _name = "report.at_account_accountant.report_cash_flow"
+    _name = "report.scalebox_accounting.report_cash_flow"
     _inherit = "at.financial.statement.common"
     _description = "Cash Flow Statement"
 

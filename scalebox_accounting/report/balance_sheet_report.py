@@ -6,7 +6,7 @@ from .financial_statement_common import PL_TYPES
 
 
 class ReportBalanceSheet(models.AbstractModel):
-    _name = "report.at_account_accountant.report_balance_sheet"
+    _name = "report.scalebox_accounting.report_balance_sheet"
     _inherit = "at.financial.statement.common"
     _description = "Balance Sheet Report"
 

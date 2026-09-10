@@ -125,6 +125,6 @@ class TestAssetLifecycle(AtAccountingCase):
             "company_id": self.company.id,
         })
         values = self.env[
-            "report.at_account_accountant.report_balance_sheet"
+            "report.scalebox_accounting.report_balance_sheet"
         ]._get_report_values(wizard.ids)
         self.assertTrue(values["is_balanced"])

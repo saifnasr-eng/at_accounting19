@@ -4,7 +4,7 @@ from odoo.tools import float_is_zero
 
 
 class ReportGeneralLedger(models.AbstractModel):
-    _name = "report.at_account_accountant.report_general_ledger"
+    _name = "report.scalebox_accounting.report_general_ledger"
     _description = "General Ledger Report"
 
     def _opening_by_account(self, wizard):

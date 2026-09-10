@@ -4,7 +4,7 @@ from odoo.tools import float_is_zero
 
 
 class ReportTax(models.AbstractModel):
-    _name = "report.at_account_accountant.report_tax"
+    _name = "report.scalebox_accounting.report_tax"
     _description = "Tax Report"
 
     def _tax_lines(self, wizard, type_tax_use):

@@ -44,7 +44,7 @@
                             <td colspan="2"><h4 class="mb-0">Assets</h4></td>
                         </tr>
                         <t t-foreach="asset_sections" t-as="section">
-                            <t t-call="at_account_accountant.statement_section_block"/>
+                            <t t-call="scalebox_accounting.statement_section_block"/>
                         </t>
                         <tr class="border-black">
                             <td><strong>TOTAL ASSETS</strong></td>
@@ -56,7 +56,7 @@
 
                         <tr><td colspan="2" class="pt-4"><h4 class="mb-0">Liabilities</h4></td></tr>
                         <t t-foreach="liability_sections" t-as="section">
-                            <t t-call="at_account_accountant.statement_section_block"/>
+                            <t t-call="scalebox_accounting.statement_section_block"/>
                         </t>
                         <tr>
                             <td><strong>Total Liabilities</strong></td>
@@ -70,7 +70,7 @@
                         <t t-if="section['visible']">
                             <tr><td colspan="2" class="pt-4"/></tr>
                         </t>
-                        <t t-call="at_account_accountant.statement_section_block"/>
+                        <t t-call="scalebox_accounting.statement_section_block"/>
 
                         <tr class="border-black">
                             <td><strong>TOTAL LIABILITIES AND EQUITY</strong></td>
@@ -94,7 +94,7 @@
     <template id="report_balance_sheet">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="at_account_accountant.report_balance_sheet_document"/>
+                <t t-call="scalebox_accounting.report_balance_sheet_document"/>
             </t>
         </t>
     </template>
@@ -116,10 +116,10 @@
                 <table class="table table-sm">
                     <tbody>
                         <t t-set="section" t-value="income_section"/>
-                        <t t-call="at_account_accountant.statement_section_block"/>
+                        <t t-call="scalebox_accounting.statement_section_block"/>
 
                         <t t-set="section" t-value="cost_section"/>
-                        <t t-call="at_account_accountant.statement_section_block"/>
+                        <t t-call="scalebox_accounting.statement_section_block"/>
 
                         <tr class="border-top border-black">
                             <td><strong>GROSS PROFIT</strong></td>
@@ -131,7 +131,7 @@
 
                         <tr><td colspan="2" class="pt-3"/></tr>
                         <t t-set="section" t-value="expense_section"/>
-                        <t t-call="at_account_accountant.statement_section_block"/>
+                        <t t-call="scalebox_accounting.statement_section_block"/>
 
                         <tr class="border-top border-black">
                             <td><strong>NET PROFIT</strong></td>
@@ -149,7 +149,7 @@
     <template id="report_profit_loss">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="at_account_accountant.report_profit_loss_document"/>
+                <t t-call="scalebox_accounting.report_profit_loss_document"/>
             </t>
         </t>
     </template>

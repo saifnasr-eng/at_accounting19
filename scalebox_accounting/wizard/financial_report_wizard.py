@@ -123,13 +123,13 @@ class AtFinancialReportWizard(models.TransientModel):
         return self.company_id.compute_fiscalyear_dates(self.date_to)["date_from"]
 
     REPORT_ACTIONS = {
-        "trial_balance": "at_account_accountant.action_report_trial_balance",
-        "general_ledger": "at_account_accountant.action_report_general_ledger",
-        "balance_sheet": "at_account_accountant.action_report_balance_sheet",
-        "profit_loss": "at_account_accountant.action_report_profit_loss",
-        "cash_flow": "at_account_accountant.action_report_cash_flow",
-        "aged_partner": "at_account_accountant.action_report_aged_partner",
-        "tax_report": "at_account_accountant.action_report_tax",
+        "trial_balance": "scalebox_accounting.action_report_trial_balance",
+        "general_ledger": "scalebox_accounting.action_report_general_ledger",
+        "balance_sheet": "scalebox_accounting.action_report_balance_sheet",
+        "profit_loss": "scalebox_accounting.action_report_profit_loss",
+        "cash_flow": "scalebox_accounting.action_report_cash_flow",
+        "aged_partner": "scalebox_accounting.action_report_aged_partner",
+        "tax_report": "scalebox_accounting.action_report_tax",
     }
 
     def print_report(self):

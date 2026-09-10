@@ -55,7 +55,7 @@ class TestFinancialReports(AtAccountingCase):
     def test_trial_balance_debits_equal_credits(self):
         wizard = self._wizard("trial_balance")
         values = self.env[
-            "report.at_account_accountant.report_trial_balance"
+            "report.scalebox_accounting.report_trial_balance"
         ]._get_report_values(wizard.ids)
 
         self.assertAlmostEqual(
@@ -66,7 +66,7 @@ class TestFinancialReports(AtAccountingCase):
     def test_profit_loss_nets_income_less_expense(self):
         wizard = self._wizard("profit_loss")
         values = self.env[
-            "report.at_account_accountant.report_profit_loss"
+            "report.scalebox_accounting.report_profit_loss"
         ]._get_report_values(wizard.ids)
 
         self.assertAlmostEqual(values["income_section"]["total"], 5000.0, places=2)
@@ -76,7 +76,7 @@ class TestFinancialReports(AtAccountingCase):
     def test_balance_sheet_balances_with_earnings_reclassified(self):
         wizard = self._wizard("balance_sheet")
         values = self.env[
-            "report.at_account_accountant.report_balance_sheet"
+            "report.scalebox_accounting.report_balance_sheet"
         ]._get_report_values(wizard.ids)
 
         # Cash of 3000 on one side; the same 3000 of profit reclassified into
@@ -89,7 +89,7 @@ class TestFinancialReports(AtAccountingCase):
     def test_cash_flow_reconciles_to_the_change_in_cash(self):
         wizard = self._wizard("cash_flow")
         values = self.env[
-            "report.at_account_accountant.report_cash_flow"
+            "report.scalebox_accounting.report_cash_flow"
         ]._get_report_values(wizard.ids)
 
         self.assertAlmostEqual(values["opening"], 0.0, places=2)
@@ -100,7 +100,7 @@ class TestFinancialReports(AtAccountingCase):
     def test_general_ledger_running_balance_ends_at_closing(self):
         wizard = self._wizard("general_ledger")
         values = self.env[
-            "report.at_account_accountant.report_general_ledger"
+            "report.scalebox_accounting.report_general_ledger"
         ]._get_report_values(wizard.ids)
 
         cash = next(
@@ -115,7 +115,7 @@ class TestFinancialReports(AtAccountingCase):
     def test_hiding_zero_rows_does_not_change_totals(self):
         shown = self._wizard("profit_loss", hide_zero_balance=False)
         hidden = self._wizard("profit_loss", hide_zero_balance=True)
-        engine = self.env["report.at_account_accountant.report_profit_loss"]
+        engine = self.env["report.scalebox_accounting.report_profit_loss"]
 
         self.assertAlmostEqual(
             engine._get_report_values(shown.ids)["net_profit"],

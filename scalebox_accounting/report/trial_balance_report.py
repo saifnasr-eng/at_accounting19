@@ -4,7 +4,7 @@ from odoo.tools import float_is_zero
 
 
 class ReportTrialBalance(models.AbstractModel):
-    _name = "report.at_account_accountant.report_trial_balance"
+    _name = "report.scalebox_accounting.report_trial_balance"
     _description = "Trial Balance Report"
 
     def _sum_by_account(self, domain):

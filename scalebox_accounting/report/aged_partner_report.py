@@ -15,7 +15,7 @@ AGE_BUCKET_LABELS = (
 
 
 class ReportAgedPartner(models.AbstractModel):
-    _name = "report.at_account_accountant.report_aged_partner"
+    _name = "report.scalebox_accounting.report_aged_partner"
     _description = "Aged Partner Balance Report"
 
     def _bucket_index(self, days_overdue):

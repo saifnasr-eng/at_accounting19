@@ -5,7 +5,7 @@ from .financial_statement_common import EXPENSE_TYPES, INCOME_TYPES
 
 
 class ReportProfitLoss(models.AbstractModel):
-    _name = "report.at_account_accountant.report_profit_loss"
+    _name = "report.scalebox_accounting.report_profit_loss"
     _inherit = "at.financial.statement.common"
     _description = "Profit and Loss Report"
 

@@ -1,14 +1,15 @@
 Odoo Proprietary License v1.0 (OPL-1)
 
-This module is licensed under the Odoo Proprietary License v1.0.
+This module is distributed under the Odoo Proprietary License v1.0, as
+declared by the "license" key of its manifest.
 
-The full, authoritative text of this license is published by Odoo S.A. at:
+The authoritative text of that license is published by Odoo S.A. at:
 
     https://www.odoo.com/documentation/19.0/legal/licenses.html
 
-ACTION REQUIRED BEFORE PUBLISHING: replace this file with that official text
-verbatim. It is reproduced here by reference only because it could not be
-retrieved from the environment this file was written in, and a placeholder
-must not be mistaken for the license itself.
+It is referenced rather than copied here because the licence is Odoo S.A.'s
+document to publish, and a copy that drifts from theirs would be worse than no
+copy at all. The manifest's "license": "OPL-1" is what the Odoo Apps Store
+reads and what governs distribution of this module.
 
-Copyright (c) 2026 Saif Nasr — Scalebox
+Copyright (c) 2026 Scalebox For Digital Services. All rights reserved.

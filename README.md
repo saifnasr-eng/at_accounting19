@@ -2,7 +2,7 @@
 
 **AT Full Accounting** — Enterprise accounting features for Odoo 19 Community.
 
-Technical name: `at_account_accountant` · Version: `19.0.1.0.0` · License: OPL-1 · Price: $150 USD
+Technical name: `scalebox_accounting` · Version: `19.0.1.0.0` · License: OPL-1 · Price: $150 USD
 
 ## What this is
 
@@ -91,7 +91,7 @@ reminder is posted to the partner's chatter, optionally emailing them.
 ## Layout
 
 ```
-at_account_accountant/
+scalebox_accounting/
 ├── __manifest__.py
 ├── models/            # assets, deferrals, follow-up levels
 ├── wizard/            # report option wizard + view
@@ -108,7 +108,7 @@ at_account_accountant/
 ```bash
 git clone https://github.com/saifnasr-eng/at_accounting19.git
 # point Odoo's addons_path at the clone, then:
-odoo -d <db> -i at_account_accountant
+odoo -d <db> -i scalebox_accounting
 ```
 
 ## Testing status
@@ -147,9 +147,9 @@ Reproducing the live run:
 
 ```bash
 odoo -d <db> --addons-path=<odoo>/addons,<clone-parent> \
-     -i at_account_accountant --stop-after-init
-odoo -d <db> --addons-path=... -u at_account_accountant \
-     --test-enable --test-tags /at_account_accountant --stop-after-init
+     -i scalebox_accounting --stop-after-init
+odoo -d <db> --addons-path=... -u scalebox_accounting \
+     --test-enable --test-tags /scalebox_accounting --stop-after-init
 ```
 
 ### Defects the live run caught
@@ -194,8 +194,8 @@ fetched from the build environment, so add it before publishing.
 ## Before publishing to Odoo Apps
 
 - Add the `LICENSE` file with the official OPL-1 text
-- Confirm `at_account_accountant` is free at
-  `https://apps.odoo.com/apps/modules/19.0/at_account_accountant/` (404 means
+- Confirm `scalebox_accounting` is free at
+  `https://apps.odoo.com/apps/modules/19.0/scalebox_accounting/` (404 means
   available). This could not be checked from the build environment.
 - The icon (`static/description/icon.png`, 128×128) and banner
   (`static/description/banner.png`, 1200×400) are in place and the manifest's

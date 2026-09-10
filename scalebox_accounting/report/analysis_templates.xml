@@ -25,7 +25,7 @@
                         <tr><td colspan="2" class="pt-3"/></tr>
 
                         <t t-foreach="sections" t-as="section">
-                            <t t-call="at_account_accountant.statement_section_block"/>
+                            <t t-call="scalebox_accounting.statement_section_block"/>
                         </t>
 
                         <tr t-if="not currency.is_zero(unclassified)">
@@ -65,7 +65,7 @@
     <template id="report_cash_flow">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="at_account_accountant.report_cash_flow_document"/>
+                <t t-call="scalebox_accounting.report_cash_flow_document"/>
             </t>
         </t>
     </template>
@@ -135,7 +135,7 @@
     <template id="report_aged_partner">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="at_account_accountant.report_aged_partner_document"/>
+                <t t-call="scalebox_accounting.report_aged_partner_document"/>
             </t>
         </t>
     </template>
@@ -217,7 +217,7 @@
     <template id="report_tax">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="at_account_accountant.report_tax_document"/>
+                <t t-call="scalebox_accounting.report_tax_document"/>
             </t>
         </t>
     </template>
