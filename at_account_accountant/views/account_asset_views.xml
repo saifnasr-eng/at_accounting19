@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_at_account_asset_list" model="ir.ui.view">
+        <field name="name">at.account.asset.list</field>
+        <field name="model">at.account.asset</field>
+        <field name="arch" type="xml">
+            <list string="Assets" decoration-muted="state == 'cancelled'"
+                  decoration-success="state == 'running'">
+                <field name="name"/>
+                <field name="asset_type"/>
+                <field name="date_start"/>
+                <field name="original_value"/>
+                <field name="value_depreciated"/>
+                <field name="value_residual"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'running'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_at_account_asset_form" model="ir.ui.view">
+        <field name="name">at.account.asset.form</field>
+        <field name="model">at.account.asset</field>
+        <field name="arch" type="xml">
+            <form string="Asset">
+                <header>
+                    <button name="action_confirm" type="object"
+                            string="Confirm" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="compute_depreciation_board" type="object"
+                            string="Recompute Board"
+                            invisible="state not in ('draft', 'running')"/>
+                    <button name="action_set_to_draft" type="object"
+                            string="Set to Draft"
+                            invisible="state != 'running'"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel"
+                            invisible="state in ('cancelled', 'closed')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,running,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_entries" type="object"
+                                class="oe_stat_button" icon="fa-pencil-square-o"
+                                invisible="entry_count == 0">
+                            <field name="entry_count" widget="statinfo"
+                                   string="Entries"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Delivery Van"/></h1>
+                    </div>
+                    <group>
+                        <group string="Value">
+                            <field name="asset_type"/>
+                            <field name="original_value"/>
+                            <field name="salvage_value"/>
+                            <field name="depreciable_value"/>
+                            <field name="value_depreciated"/>
+                            <field name="value_residual"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id"
+                                   groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Depreciation">
+                            <field name="date_start"/>
+                            <field name="method"/>
+                            <field name="method_progress_factor"
+                                   invisible="method != 'degressive'"
+                                   required="method == 'degressive'"/>
+                            <field name="method_number"/>
+                            <field name="method_period"/>
+                        </group>
+                    </group>
+                    <group string="Accounting">
+                        <group>
+                            <field name="journal_id"
+                                   options="{'no_create': True}"/>
+                            <field name="account_asset_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="account_depreciation_id"
+                                   options="{'no_create': True}"/>
+                            <field name="account_expense_id"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Depreciation Board"
+                              name="depreciation_board">
+                            <field name="depreciation_line_ids" readonly="1">
+                                <list decoration-success="move_posted">
+                                    <field name="sequence" string="#"/>
+                                    <field name="date"/>
+                                    <field name="amount"/>
+                                    <field name="depreciated_value"/>
+                                    <field name="remaining_value"/>
+                                    <field name="currency_id"
+                                           column_invisible="True"/>
+                                    <field name="move_id"/>
+                                    <field name="move_posted"/>
+                                    <button name="action_create_move"
+                                            type="object" icon="fa-check"
+                                            title="Post this period"
+                                            invisible="move_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_at_account_asset_search" model="ir.ui.view">
+        <field name="name">at.account.asset.search</field>
+        <field name="model">at.account.asset</field>
+        <field name="arch" type="xml">
+            <search string="Assets">
+                <field name="name"/>
+                <field name="journal_id"/>
+                <filter name="filter_draft" string="Draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_running" string="Running"
+                        domain="[('state', '=', 'running')]"/>
+                <filter name="filter_closed" string="Closed"
+                        domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter name="filter_purchase" string="Fixed Assets"
+                        domain="[('asset_type', '=', 'purchase')]"/>
+                <filter name="filter_sale" string="Deferred Revenue"
+                        domain="[('asset_type', '=', 'sale')]"/>
+                <filter name="filter_expense" string="Deferred Expense"
+                        domain="[('asset_type', '=', 'expense')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_type" string="Type"
+                            context="{'group_by': 'asset_type'}"/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_at_account_asset" model="ir.actions.act_window">
+        <field name="name">Assets</field>
+        <field name="res_model">at.account.asset</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_purchase': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Record your first asset</p>
+            <p>
+                Track a fixed asset's depreciation, or spread deferred revenue
+                and deferred expense over the periods they belong to.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_at_deferred_revenue" model="ir.actions.act_window">
+        <field name="name">Deferred Revenue</field>
+        <field name="res_model">at.account.asset</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('asset_type', '=', 'sale')]</field>
+        <field name="context">{'default_asset_type': 'sale'}</field>
+    </record>
+
+    <record id="action_at_deferred_expense" model="ir.actions.act_window">
+        <field name="name">Deferred Expense</field>
+        <field name="res_model">at.account.asset</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('asset_type', '=', 'expense')]</field>
+        <field name="context">{'default_asset_type': 'expense'}</field>
+    </record>
+
+    <menuitem id="menu_at_assets_root"
+              name="AT Assets"
+              parent="account.menu_finance"
+              sequence="85"/>
+
+    <menuitem id="menu_at_assets"
+              name="Assets"
+              parent="menu_at_assets_root"
+              action="action_at_account_asset"
+              sequence="10"/>
+
+    <menuitem id="menu_at_deferred_revenue"
+              name="Deferred Revenue"
+              parent="menu_at_assets_root"
+              action="action_at_deferred_revenue"
+              sequence="20"/>
+
+    <menuitem id="menu_at_deferred_expense"
+              name="Deferred Expense"
+              parent="menu_at_assets_root"
+              action="action_at_deferred_expense"
+              sequence="30"/>
+
+</odoo>

@@ -67,6 +67,30 @@ def main():
             if name not in defined:
                 problems.append(f"{path}: no template for report model {name}")
 
+    # Every model_* reference must correspond to a model declared here.
+    declared_models = set()
+    for path in glob.glob("**/*.py", recursive=True):
+        for name in re.findall(r'_name = "([\w.]+)"', open(path).read()):
+            if not name.startswith("report."):
+                declared_models.add("model_" + name.replace(".", "_"))
+
+    access_csv = "security/ir.model.access.csv"
+    if os.path.exists(access_csv):
+        import csv
+        with open(access_csv) as handle:
+            for row in csv.DictReader(handle):
+                model_ref = row["model_id:id"]
+                if model_ref not in declared_models:
+                    problems.append(f"{access_csv}: unknown model {model_ref}")
+
+    for path in xml_files:
+        for record in ET.parse(path).getroot().iter("record"):
+            for field in record.findall("field"):
+                if field.get("name") == "model_id" and field.get("ref"):
+                    ref = field.get("ref")
+                    if ref.startswith("model_") and ref not in declared_models:
+                        problems.append(f"{path}: unknown model_id ref {ref}")
+
     wizard = open("wizard/financial_report_wizard.py").read()
     selection_block = wizard.split('string="Report"')[0]
     report_types = set(re.findall(r'\("(\w+)",', selection_block))
@@ -78,7 +102,8 @@ def main():
         if action not in defined:
             problems.append(f"REPORT_ACTIONS[{report_type!r}] -> undefined {action}")
 
-    print(f"{len(defined)} xmlids, {len(report_types)} report types")
+    print(f"{len(defined)} xmlids, {len(report_types)} report types, "
+          f"{len(declared_models)} models")
     if problems:
         print("FAILED")
         for problem in problems:

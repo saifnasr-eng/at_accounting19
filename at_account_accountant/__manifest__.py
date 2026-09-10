@@ -32,10 +32,12 @@ Available now
   - Aged Partner Balance — receivable or payable, bucketed by days overdue
   - Tax Report — base and tax amounts per sales and purchase tax
 
+* Asset management — straight-line and declining-balance depreciation boards,
+  posted to journal entries manually or by a scheduled action
+* Deferred revenue and deferred expense, sharing the same board mechanics
+
 Planned scope
 -------------
-* Asset management (depreciation boards, disposal, revaluation)
-* Deferred revenue and deferred expense
 * Bank statement reconciliation widget
 * Customer follow-up levels and reminder letters
 
@@ -50,11 +52,14 @@ endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
     ],
     "data": [
         "security/ir.model.access.csv",
+        "security/at_account_accountant_security.xml",
+        "data/ir_cron_data.xml",
         "report/report_templates.xml",
         "report/statement_templates.xml",
         "report/analysis_templates.xml",
         "report/report_actions.xml",
         "wizard/financial_report_wizard_views.xml",
+        "views/account_asset_views.xml",
     ],
     "installable": True,
     "application": False,
