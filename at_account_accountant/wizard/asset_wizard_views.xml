@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_at_asset_disposal_wizard_form" model="ir.ui.view">
+        <field name="name">at.asset.disposal.wizard.form</field>
+        <field name="model">at.asset.disposal.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Dispose of Asset">
+                <field name="asset_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <group>
+                    <group>
+                        <field name="disposal_type"/>
+                        <field name="date"/>
+                        <field name="journal_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="book_value"/>
+                        <field name="proceeds"/>
+                        <field name="gain_loss"/>
+                    </group>
+                </group>
+                <group string="Accounts">
+                    <field name="proceeds_account_id"
+                           options="{'no_create': True}"
+                           invisible="not proceeds"
+                           required="proceeds"/>
+                    <field name="gain_loss_account_id"
+                           options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button name="action_dispose" type="object"
+                            string="Dispose" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_at_asset_revaluation_wizard_form" model="ir.ui.view">
+        <field name="name">at.asset.revaluation.wizard.form</field>
+        <field name="model">at.asset.revaluation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Revalue Asset">
+                <field name="asset_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <group>
+                    <group>
+                        <field name="date"/>
+                        <field name="journal_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="current_value"/>
+                        <field name="new_value"/>
+                        <field name="difference"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="revaluation_account_id"
+                           options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button name="action_revalue" type="object"
+                            string="Revalue" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

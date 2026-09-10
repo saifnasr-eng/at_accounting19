@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_at_financial_report_wizard_form" model="ir.ui.view">
+        <field name="name">at.financial.report.wizard.form</field>
+        <field name="model">at.financial.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Financial Report">
+                <group>
+                    <group>
+                        <field name="report_type"/>
+                        <field name="date_from"
+                               invisible="report_type in ('balance_sheet', 'aged_partner')"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="company_id"
+                               groups="base.group_multi_company"
+                               options="{'no_create': True}"/>
+                        <field name="target_move"/>
+                        <field name="aged_result_type"
+                               invisible="report_type != 'aged_partner'"/>
+                        <field name="hide_zero_balance"/>
+                    </group>
+                </group>
+                <group string="Filters">
+                    <field name="journal_ids" widget="many2many_tags"
+                           options="{'no_create': True}"/>
+                    <field name="account_ids" widget="many2many_tags"
+                           options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button name="print_report" type="object"
+                            string="Print" class="btn-primary"
+                            data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary"
+                            special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_at_financial_report_wizard" model="ir.actions.act_window">
+        <field name="name">Financial Reports</field>
+        <field name="res_model">at.financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_at_financial_reports"
+              name="AT Financial Reports"
+              parent="account.menu_finance_reports"
+              action="action_at_financial_report_wizard"
+              sequence="90"/>
+
+</odoo>

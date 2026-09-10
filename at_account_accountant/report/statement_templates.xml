@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Renders one section: a heading, its rows, and a subtotal. -->
+    <template id="statement_section_block">
+        <t t-if="section['visible']">
+        <tr class="table-active">
+            <td><strong t-esc="section['label']"/></td>
+            <td class="text-end"/>
+        </tr>
+        <tr t-foreach="section['rows']" t-as="row">
+            <td class="ps-4"><span t-esc="row['label']"/></td>
+            <td class="text-end">
+                <span t-esc="row['amount']"
+                      t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="ps-4"><em>Total <span t-esc="section['label']"/></em></td>
+            <td class="text-end border-top">
+                <span t-esc="section['total']"
+                      t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+            </td>
+        </tr>
+        </t>
+    </template>
+
+    <template id="report_balance_sheet_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="text-center">
+                    <h2>Balance Sheet</h2>
+                    <h4><span t-field="docs.company_id.name"/></h4>
+                    <p>
+                        As of <strong t-field="docs.date_to"/> ·
+                        <span t-if="docs.target_move == 'posted'">Posted entries only</span>
+                        <span t-else="">All entries</span>
+                    </p>
+                </div>
+
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td colspan="2"><h4 class="mb-0">Assets</h4></td>
+                        </tr>
+                        <t t-foreach="asset_sections" t-as="section">
+                            <t t-call="at_account_accountant.statement_section_block"/>
+                        </t>
+                        <tr class="border-black">
+                            <td><strong>TOTAL ASSETS</strong></td>
+                            <td class="text-end">
+                                <strong t-esc="total_assets"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+
+                        <tr><td colspan="2" class="pt-4"><h4 class="mb-0">Liabilities</h4></td></tr>
+                        <t t-foreach="liability_sections" t-as="section">
+                            <t t-call="at_account_accountant.statement_section_block"/>
+                        </t>
+                        <tr>
+                            <td><strong>Total Liabilities</strong></td>
+                            <td class="text-end border-top">
+                                <strong t-esc="total_liabilities"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+
+                        <t t-set="section" t-value="equity_section"/>
+                        <t t-if="section['visible']">
+                            <tr><td colspan="2" class="pt-4"/></tr>
+                        </t>
+                        <t t-call="at_account_accountant.statement_section_block"/>
+
+                        <tr class="border-black">
+                            <td><strong>TOTAL LIABILITIES AND EQUITY</strong></td>
+                            <td class="text-end">
+                                <strong t-esc="total_liabilities_equity"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p t-if="not is_balanced" class="alert alert-warning mt-3">
+                    <strong>Warning:</strong> assets do not equal liabilities plus
+                    equity. This usually means the journal or account filters
+                    exclude part of the ledger, or that unbalanced entries exist.
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_balance_sheet">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="at_account_accountant.report_balance_sheet_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_profit_loss_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="text-center">
+                    <h2>Profit &amp; Loss</h2>
+                    <h4><span t-field="docs.company_id.name"/></h4>
+                    <p>
+                        <span t-field="docs.date_from"/> to
+                        <span t-field="docs.date_to"/> ·
+                        <span t-if="docs.target_move == 'posted'">Posted entries only</span>
+                        <span t-else="">All entries</span>
+                    </p>
+                </div>
+
+                <table class="table table-sm">
+                    <tbody>
+                        <t t-set="section" t-value="income_section"/>
+                        <t t-call="at_account_accountant.statement_section_block"/>
+
+                        <t t-set="section" t-value="cost_section"/>
+                        <t t-call="at_account_accountant.statement_section_block"/>
+
+                        <tr class="border-top border-black">
+                            <td><strong>GROSS PROFIT</strong></td>
+                            <td class="text-end">
+                                <strong t-esc="gross_profit"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+
+                        <tr><td colspan="2" class="pt-3"/></tr>
+                        <t t-set="section" t-value="expense_section"/>
+                        <t t-call="at_account_accountant.statement_section_block"/>
+
+                        <tr class="border-top border-black">
+                            <td><strong>NET PROFIT</strong></td>
+                            <td class="text-end">
+                                <strong t-esc="net_profit"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_profit_loss">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="at_account_accountant.report_profit_loss_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

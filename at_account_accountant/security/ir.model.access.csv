@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_at_financial_report_wizard,at.financial.report.wizard,model_at_financial_report_wizard,account.group_account_readonly,1,1,1,1
+access_at_account_asset_readonly,at.account.asset.readonly,model_at_account_asset,account.group_account_readonly,1,0,0,0
+access_at_account_asset_user,at.account.asset.user,model_at_account_asset,account.group_account_user,1,1,1,0
+access_at_account_asset_manager,at.account.asset.manager,model_at_account_asset,account.group_account_manager,1,1,1,1
+access_at_account_asset_line_readonly,at.account.asset.line.readonly,model_at_account_asset_line,account.group_account_readonly,1,0,0,0
+access_at_account_asset_line_user,at.account.asset.line.user,model_at_account_asset_line,account.group_account_user,1,1,1,0
+access_at_account_asset_line_manager,at.account.asset.line.manager,model_at_account_asset_line,account.group_account_manager,1,1,1,1
+access_at_followup_level_readonly,at.followup.level.readonly,model_at_followup_level,account.group_account_readonly,1,0,0,0
+access_at_followup_level_manager,at.followup.level.manager,model_at_followup_level,account.group_account_manager,1,1,1,1
+access_at_asset_disposal_wizard,at.asset.disposal.wizard,model_at_asset_disposal_wizard,account.group_account_user,1,1,1,1
+access_at_asset_revaluation_wizard,at.asset.revaluation.wizard,model_at_asset_revaluation_wizard,account.group_account_user,1,1,1,1

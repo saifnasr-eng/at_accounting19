@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_at_account_asset_company" model="ir.rule">
+        <field name="name">Asset: multi-company</field>
+        <field name="model_id" ref="model_at_account_asset"/>
+        <field name="domain_force">
+            ['|', ('company_id', '=', False),
+                  ('company_id', 'in', company_ids)]
+        </field>
+    </record>
+
+    <record id="rule_at_account_asset_line_company" model="ir.rule">
+        <field name="name">Asset board line: multi-company</field>
+        <field name="model_id" ref="model_at_account_asset_line"/>
+        <field name="domain_force">
+            ['|', ('company_id', '=', False),
+                  ('company_id', 'in', company_ids)]
+        </field>
+    </record>
+</odoo>
