@@ -33,12 +33,13 @@ Available now
   - Tax Report — base and tax amounts per sales and purchase tax
 
 * Asset management — straight-line and declining-balance depreciation boards,
-  posted to journal entries manually or by a scheduled action
+  posted to journal entries manually or by a scheduled action, plus disposal
+  (sale or scrap, with gain/loss) and revaluation
 * Deferred revenue and deferred expense, sharing the same board mechanics
 * Customer follow-up levels, with a reminder posted to the partner's chatter
 
-Planned scope
--------------
+Not included
+------------
 * Bank statement reconciliation widget
 
 This module is an independent implementation. It is not affiliated with,
@@ -59,8 +60,12 @@ endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
         "report/analysis_templates.xml",
         "report/report_actions.xml",
         "wizard/financial_report_wizard_views.xml",
+        "wizard/asset_wizard_views.xml",
         "views/account_asset_views.xml",
         "views/account_followup_views.xml",
+    ],
+    "images": [
+        "static/description/banner.png",
     ],
     "installable": True,
     "application": False,

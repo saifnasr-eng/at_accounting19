@@ -5,7 +5,7 @@
         <field name="name">at.account.asset.list</field>
         <field name="model">at.account.asset</field>
         <field name="arch" type="xml">
-            <list string="Assets" decoration-muted="state == 'cancelled'"
+            <list string="Assets" decoration-muted="state in ('cancelled', 'disposed')"
                   decoration-success="state == 'running'">
                 <field name="name"/>
                 <field name="asset_type"/>
@@ -33,12 +33,18 @@
                     <button name="compute_depreciation_board" type="object"
                             string="Recompute Board"
                             invisible="state not in ('draft', 'running')"/>
+                    <button name="action_dispose" type="object"
+                            string="Dispose"
+                            invisible="state not in ('running', 'closed')"/>
+                    <button name="action_revalue" type="object"
+                            string="Revalue"
+                            invisible="state != 'running'"/>
                     <button name="action_set_to_draft" type="object"
                             string="Set to Draft"
                             invisible="state != 'running'"/>
                     <button name="action_cancel" type="object"
                             string="Cancel"
-                            invisible="state in ('cancelled', 'closed')"/>
+                            invisible="state in ('cancelled', 'closed', 'disposed')"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,running,closed"/>
                 </header>
@@ -51,6 +57,8 @@
                                    string="Entries"/>
                         </button>
                     </div>
+                    <widget name="web_ribbon" title="Disposed" bg_color="text-bg-danger"
+                            invisible="state != 'disposed'"/>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1><field name="name" placeholder="e.g. Delivery Van"/></h1>
@@ -112,6 +120,14 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="Disposal" name="disposal"
+                              invisible="state != 'disposed'">
+                            <group>
+                                <field name="disposal_date"/>
+                                <field name="disposal_type"/>
+                                <field name="disposal_move_id"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 <chatter/>
@@ -132,6 +148,8 @@
                         domain="[('state', '=', 'running')]"/>
                 <filter name="filter_closed" string="Closed"
                         domain="[('state', '=', 'closed')]"/>
+                <filter name="filter_disposed" string="Disposed"
+                        domain="[('state', '=', 'disposed')]"/>
                 <separator/>
                 <filter name="filter_purchase" string="Fixed Assets"
                         domain="[('asset_type', '=', 'purchase')]"/>

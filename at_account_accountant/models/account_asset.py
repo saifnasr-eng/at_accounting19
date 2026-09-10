@@ -30,6 +30,7 @@ class AtAccountAsset(models.Model):
             ("draft", "Draft"),
             ("running", "Running"),
             ("closed", "Closed"),
+            ("disposed", "Disposed"),
             ("cancelled", "Cancelled"),
         ],
         default="draft",
@@ -141,6 +142,23 @@ class AtAccountAsset(models.Model):
         domain="[('type', '=', 'general')]",
     )
 
+    disposal_move_id = fields.Many2one(
+        "account.move",
+        string="Disposal Entry",
+        readonly=True,
+        copy=False,
+    )
+    disposal_date = fields.Date(readonly=True, copy=False)
+    disposal_type = fields.Selection(
+        [
+            ("sale", "Sold"),
+            ("scrap", "Scrapped"),
+        ],
+        string="Disposal Reason",
+        readonly=True,
+        copy=False,
+    )
+
     depreciation_line_ids = fields.One2many(
         "at.account.asset.line",
         "asset_id",
@@ -198,19 +216,28 @@ class AtAccountAsset(models.Model):
                     _("The declining factor must be between 0 and 1.")
                 )
 
-    def _compute_board_amounts(self):
+    def _compute_board_amounts(self, total=None, periods=None):
         """Return the amount for each period, as a list.
 
-        Straight line splits the depreciable value evenly. Declining balance
-        takes a fixed share of the remaining book value, but switches to the
-        straight-line amount once that becomes larger, which is what stops a
-        declining asset from never reaching its salvage value. The last period
-        absorbs any rounding difference so the board always totals exactly.
+        Straight line splits the value evenly. Declining balance takes a fixed
+        share of the remaining book value, but switches to the straight-line
+        amount once that becomes larger, which is what stops a declining asset
+        from never reaching its salvage value. The last period absorbs any
+        rounding difference so the board always totals exactly.
+
+        ``total`` and ``periods`` default to the whole asset, and are passed
+        explicitly when only part of the board is being rebuilt: after a
+        revaluation, or when recomputing around periods already posted. In
+        that case what is left to depreciate must be spread over the periods
+        that are left, not over the asset's full life again.
         """
         self.ensure_one()
         currency = self.currency_id
-        total = self.depreciable_value
-        periods = self.method_number
+        total = self.depreciable_value if total is None else total
+        periods = self.method_number if periods is None else periods
+
+        if periods <= 0:
+            return []
 
         amounts = []
         remaining = total
@@ -256,14 +283,20 @@ class AtAccountAsset(models.Model):
                 lambda line: not line.move_posted
             ).unlink()
 
-            amounts = asset._compute_board_amounts()
-            dates = asset._board_dates()
-            cumulative = sum(posted_lines.mapped("amount"))
+            posted_amount = sum(posted_lines.mapped("amount"))
+            remaining_periods = asset.method_number - len(posted_lines)
+            amounts = asset._compute_board_amounts(
+                total=asset.depreciable_value - posted_amount,
+                periods=remaining_periods,
+            )
+            # Board dates cover the asset's whole life; the posted ones are
+            # already spoken for, so line the new amounts up with the rest.
+            dates = asset._board_dates()[len(posted_lines):]
+            cumulative = posted_amount
 
             values = []
-            for index, (amount, date) in enumerate(zip(amounts, dates), start=1):
-                if index <= len(posted_lines):
-                    continue
+            for offset, (amount, date) in enumerate(zip(amounts, dates)):
+                index = len(posted_lines) + offset + 1
                 cumulative += amount
                 values.append({
                     "asset_id": asset.id,
@@ -304,6 +337,28 @@ class AtAccountAsset(models.Model):
             ).unlink()
             asset.state = "cancelled"
         return True
+
+    def action_dispose(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Dispose of Asset"),
+            "res_model": "at.asset.disposal.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_asset_id": self.id, "active_id": self.id},
+        }
+
+    def action_revalue(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Revalue Asset"),
+            "res_model": "at.asset.revaluation.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_asset_id": self.id, "active_id": self.id},
+        }
 
     def action_view_entries(self):
         self.ensure_one()

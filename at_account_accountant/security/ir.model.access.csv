@@ -8,3 +8,5 @@ access_at_account_asset_line_user,at.account.asset.line.user,model_at_account_as
 access_at_account_asset_line_manager,at.account.asset.line.manager,model_at_account_asset_line,account.group_account_manager,1,1,1,1
 access_at_followup_level_readonly,at.followup.level.readonly,model_at_followup_level,account.group_account_readonly,1,0,0,0
 access_at_followup_level_manager,at.followup.level.manager,model_at_followup_level,account.group_account_manager,1,1,1,1
+access_at_asset_disposal_wizard,at.asset.disposal.wizard,model_at_asset_disposal_wizard,account.group_account_user,1,1,1,1
+access_at_asset_revaluation_wizard,at.asset.revaluation.wizard,model_at_asset_revaluation_wizard,account.group_account_user,1,1,1,1

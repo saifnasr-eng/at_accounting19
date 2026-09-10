@@ -3,6 +3,7 @@
 
     <!-- Renders one section: a heading, its rows, and a subtotal. -->
     <template id="statement_section_block">
+        <t t-if="section['visible']">
         <tr class="table-active">
             <td><strong t-esc="section['label']"/></td>
             <td class="text-end"/>
@@ -21,6 +22,7 @@
                       t-options="{'widget': 'monetary', 'display_currency': currency}"/>
             </td>
         </tr>
+        </t>
     </template>
 
     <template id="report_balance_sheet_document">
@@ -64,8 +66,10 @@
                             </td>
                         </tr>
 
-                        <tr><td colspan="2" class="pt-4"><h4 class="mb-0">Equity</h4></td></tr>
                         <t t-set="section" t-value="equity_section"/>
+                        <t t-if="section['visible']">
+                            <tr><td colspan="2" class="pt-4"/></tr>
+                        </t>
                         <t t-call="at_account_accountant.statement_section_block"/>
 
                         <tr class="border-black">

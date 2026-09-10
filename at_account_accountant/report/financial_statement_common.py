@@ -55,4 +55,7 @@ class AtFinancialStatementCommon(models.AbstractModel):
             "label": label,
             "rows": visible,
             "total": sum(amount for _row_label, amount in rows),
+            # A section with nothing left to show is dropped by the template
+            # rather than printing a heading above a lone zero total.
+            "visible": bool(visible),
         }

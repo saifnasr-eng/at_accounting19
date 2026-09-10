@@ -61,6 +61,15 @@ Design notes:
 deferred revenue and deferred expense — they differ only in which account is
 debited and which is credited.
 
+**Disposal** (sale or scrap) removes the gross cost and the depreciation booked
+so far, records any proceeds, and sends the difference to a gain/loss account.
+**Revaluation** posts the adjustment against a reserve or impairment account,
+raises the gross value, and rebuilds the periods not yet posted. Both void the
+board's remaining periods where appropriate.
+
+> The module never books the *purchase* itself — that comes from a vendor bill
+> or a manual entry. It books depreciation, revaluation and disposal.
+
 - **Straight line** and **declining balance** depreciation
 - Declining balance switches to the straight-line amount once that is larger,
   which is what lets the asset actually reach its salvage value
@@ -104,21 +113,31 @@ odoo -d <db> -i at_account_accountant
 
 ## Testing status
 
-Verified on a real **Odoo 19.0 FINAL** install (PostgreSQL 16), on a database
-named `cars` loaded with Odoo's demo data:
+Verified on a real **Odoo 19.0 FINAL** install (PostgreSQL 16, wkhtmltopdf
+0.12.6), on a database named `cars`:
 
-- Module installs cleanly: `-i at_account_accountant` exits 0
-- **19/19 unit tests pass** (`--test-enable --test-tags /at_account_accountant`)
-- **All 7 reports render** to HTML against the demo ledger, 21-113 KB each
-- On the full demo ledger the statements reconcile:
+| Check | Result |
+|---|---|
+| Install with demo data | clean, exits 0 |
+| Install on an empty database (no demo) | clean, exits 0 |
+| Unit tests | **30/30 pass** |
+| All 7 reports render to HTML | pass |
+| All 7 reports render to **PDF** | pass, 19–38 KB each |
 
-  | Check | Result |
-  |---|---|
-  | Balance sheet: assets vs. liabilities + equity | 54,574.00 vs. 54,574.00 — difference 0.00 |
-  | Trial balance: debits vs. credits | 233,541.74 vs. 233,541.74 — difference 0.00 |
-  | Cash flow: classified movements vs. change in cash | reconciles, 0.00 unclassified |
+On the full demo ledger the statements reconcile:
 
-Static checks, which need no Odoo runtime:
+| Check | Result |
+|---|---|
+| Balance sheet: assets vs. liabilities + equity | 54,574.00 vs. 54,574.00 — difference **0.00** |
+| Trial balance: debits vs. credits | 233,541.74 vs. 233,541.74 — difference **0.00** |
+| Cash flow: classified movements vs. change in cash | reconciles, **0.00** unclassified |
+
+`tests/test_asset_lifecycle.py` runs one asset from purchase through six
+months of cron-posted depreciation, an upward revaluation, and a sale below
+book value, then asserts the asset and its accumulated depreciation are back
+to zero and the balance sheet still balances.
+
+Static checks, no Odoo runtime needed:
 
 ```bash
 python3 tools/validate_module.py
@@ -133,27 +152,39 @@ odoo -d <db> --addons-path=... -u at_account_accountant \
      --test-enable --test-tags /at_account_accountant --stop-after-init
 ```
 
-### Fixed during the live run
+### Defects the live run caught
 
-Four things only a real install could catch, all now fixed:
+Six things static checks could never find, all fixed:
 
 1. `ir.cron.numbercall` no longer exists in 19.0 — removed from the cron record
 2. `<group expand="0" string="...">` is rejected by the search-view schema in
    19.0 — the group-by block now follows the core `account` module's shape
-3. `ir.actions.report.report_action()` returns the *layout configurator* wizard,
+3. `_()` inside a list comprehension cannot resolve the language, because the
+   comprehension gets its own frame — switched to `self.env._()`
+4. `ir.actions.report.report_action()` returns the *layout configurator* wizard,
    not the report, the first time a company prints anything — expected Odoo
    behaviour, so the test opts out with `discard_logo_check`
-4. `_()` inside a list comprehension cannot resolve the language, because the
-   comprehension gets its own frame — switched to `self.env._()`
+5. **Rebuilding a board after a revaluation double-counted the posted
+   periods**, leaving the board short by their value. It now spreads what is
+   left to depreciate over the periods that are left
+6. Statement sections with every row hidden at zero printed a bare heading
+   above a lone zero total — empty sections are now dropped
 
-The report tests originally measured the demo ledger rather than their own
-fixtures; they now run inside a company created by the test.
+The report tests were also measuring the demo ledger rather than their own
+fixtures; they now run inside a company the test creates.
 
 ## Not built
 
 - **Bank reconciliation widget.** This is a substantial OWL frontend
-  component, not a model-and-view feature, and was out of reach here.
-- **Asset disposal and revaluation.** The board handles the normal life of an
-  asset; selling or revaluing one mid-life is not implemented.
-- `static/description/icon.png` (128×128) and `banner.png`, required by Odoo
-  Apps before publishing. Re-add the manifest's `images` key once they exist.
+  component rather than a model-and-view feature, and is the one part of the
+  original scope deliberately left out. Community installs keep Odoo's own
+  statement reconciliation.
+
+## Before publishing to Odoo Apps
+
+- Confirm `at_account_accountant` is free at
+  `https://apps.odoo.com/apps/modules/19.0/at_account_accountant/` (404 means
+  available). This could not be checked from the build environment.
+- The icon (`static/description/icon.png`, 128×128) and banner
+  (`static/description/banner.png`, 1200×400) are in place and the manifest's
+  `images` key points at the banner.
