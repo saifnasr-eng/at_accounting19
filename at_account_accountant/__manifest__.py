@@ -17,9 +17,16 @@ to a Community installation, on top of the standard ``account`` module.
 
 Available now
 -------------
-* Financial reports: Trial Balance and General Ledger, with initial balance,
-  period movement and closing balance per account. Filter by date range,
-  journal, account and posted/all entries. Printable as PDF.
+* Financial reports, all printable as PDF and filterable by date range,
+  journal, account and posted/all entries:
+
+  - Trial Balance — initial balance, period movement and closing balance
+    per account
+  - General Ledger — every entry per account with a running balance
+  - Balance Sheet — assets, liabilities and equity as of a date, with
+    previous-year and current-year earnings reclassified into equity
+  - Profit & Loss — income, cost of revenue and expenses, with gross and
+    net profit
 
 Planned scope
 -------------
@@ -27,8 +34,7 @@ Planned scope
 * Deferred revenue and deferred expense
 * Bank statement reconciliation widget
 * Customer follow-up levels and reminder letters
-* Remaining financial reports: Balance Sheet, Profit & Loss, Cash Flow,
-  Aged Partner Balance, Tax Report
+* Remaining financial reports: Cash Flow, Aged Partner Balance, Tax Report
 
 This module is an independent implementation. It is not affiliated with,
 endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
@@ -42,6 +48,7 @@ endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
     "data": [
         "security/ir.model.access.csv",
         "report/report_templates.xml",
+        "report/statement_templates.xml",
         "report/report_actions.xml",
         "wizard/financial_report_wizard_views.xml",
     ],

@@ -9,7 +9,8 @@
                 <group>
                     <group>
                         <field name="report_type"/>
-                        <field name="date_from"/>
+                        <field name="date_from"
+                               invisible="report_type == 'balance_sheet'"/>
                         <field name="date_to"/>
                     </group>
                     <group>

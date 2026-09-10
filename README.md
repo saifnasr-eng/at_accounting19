@@ -18,13 +18,32 @@ is already taken on Odoo Apps for 19.0.
 
 ## Available now
 
-**Financial reports** — Trial Balance and General Ledger, printable as PDF from
-*Accounting → Reporting → AT Financial Reports*.
+**Financial reports** — four PDF reports from
+*Accounting → Reporting → AT Financial Reports*:
 
-- Initial balance, period debit/credit, and closing balance per account
-- Filter by date range, journal, account, and posted-only vs. all entries
-- Defaults to the company's current **fiscal year** (not the calendar year)
-- Option to hide accounts that are flat at zero across the period
+| Report | What it shows |
+|---|---|
+| Trial Balance | Initial balance, period debit/credit, closing balance per account |
+| General Ledger | Every entry per account, with a running balance |
+| Balance Sheet | Assets vs. liabilities + equity, as of a date |
+| Profit & Loss | Income, cost of revenue, expenses, gross and net profit |
+
+Shared options: date range, journal filter, account filter, posted-only vs.
+all entries, and hiding accounts that sit at zero.
+
+Design notes:
+
+- Defaults to the company's current **fiscal year**, not the calendar year
+- The Balance Sheet is a **snapshot**: it ignores the start date and
+  accumulates from the first entry up to the end date
+- Odoo posts no year-end closing entry, so profit left sitting in income and
+  expense accounts is **reclassified into equity** — split into *Previous
+  Years Earnings* (before the fiscal year of the end date) and *Current Year
+  Earnings*. Any `equity_unaffected` balance is shown alongside, so a company
+  that does post closing entries is not double-counted.
+- `off_balance` accounts are excluded from the Balance Sheet
+- The Balance Sheet prints a warning when assets do not equal liabilities plus
+  equity, rather than quietly showing a broken statement
 - Built entirely on `account.move.line` via the ORM — no Enterprise internals
 
 ## Planned scope
@@ -33,8 +52,7 @@ is already taken on Odoo Apps for 19.0.
 - Deferred revenue and deferred expense
 - Bank statement reconciliation widget
 - Customer follow-up levels and reminder letters
-- Remaining financial reports: Balance Sheet, Profit & Loss, Cash Flow,
-  Aged Partner Balance, Tax Report
+- Remaining financial reports: Cash Flow, Aged Partner Balance, Tax Report
 
 ## Layout
 
@@ -61,9 +79,15 @@ odoo -d <db> -i at_account_accountant
 ## Testing status
 
 The reports have **not** been run against a live Odoo 19 instance yet — no Odoo
-runtime was available where they were written. Statically validated: manifest
-parses via `ast.literal_eval`, all Python compiles, all XML is well-formed, and
-every internal xmlid / `report_name` / `AbstractModel` binding resolves. The
+runtime was available where they were written. Run the static checks with:
+
+```bash
+python3 tools/validate_module.py
+```
+
+That verifies the manifest parses, every declared data file exists, all Python
+compiles, all XML is well-formed, and every internal xmlid, `report_name`,
+report `AbstractModel` and `report_type` resolves to something real. The
 external references (`account.menu_finance_reports`,
 `account.group_account_readonly`, `base.group_multi_company`) still need to be
 confirmed on a real 19.0 install.

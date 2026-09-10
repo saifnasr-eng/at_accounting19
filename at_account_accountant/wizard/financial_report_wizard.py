@@ -11,6 +11,8 @@ class AtFinancialReportWizard(models.TransientModel):
         [
             ("trial_balance", "Trial Balance"),
             ("general_ledger", "General Ledger"),
+            ("balance_sheet", "Balance Sheet"),
+            ("profit_loss", "Profit & Loss"),
         ],
         string="Report",
         required=True,
@@ -95,11 +97,26 @@ class AtFinancialReportWizard(models.TransientModel):
     def _initial_domain(self):
         return self._base_domain() + [("date", "<", self.date_from)]
 
+    def _as_of_domain(self):
+        """Everything up to and including the end date.
+
+        A balance sheet is a snapshot, not a period, so it ignores date_from
+        and accumulates from the very first entry.
+        """
+        return self._base_domain() + [("date", "<=", self.date_to)]
+
+    def _fiscalyear_start(self):
+        """First day of the fiscal year containing the end date."""
+        self.ensure_one()
+        return self.company_id.compute_fiscalyear_dates(self.date_to)["date_from"]
+
+    REPORT_ACTIONS = {
+        "trial_balance": "at_account_accountant.action_report_trial_balance",
+        "general_ledger": "at_account_accountant.action_report_general_ledger",
+        "balance_sheet": "at_account_accountant.action_report_balance_sheet",
+        "profit_loss": "at_account_accountant.action_report_profit_loss",
+    }
+
     def print_report(self):
         self.ensure_one()
-        report_name = (
-            "at_account_accountant.action_report_trial_balance"
-            if self.report_type == "trial_balance"
-            else "at_account_accountant.action_report_general_ledger"
-        )
-        return self.env.ref(report_name).report_action(self)
+        return self.env.ref(self.REPORT_ACTIONS[self.report_type]).report_action(self)
