@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_cash_flow_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="text-center">
+                    <h2>Cash Flow Statement</h2>
+                    <h4><span t-field="docs.company_id.name"/></h4>
+                    <p>
+                        <span t-field="docs.date_from"/> to
+                        <span t-field="docs.date_to"/>
+                    </p>
+                </div>
+
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td><strong>Cash at Beginning of Period</strong></td>
+                            <td class="text-end">
+                                <strong t-esc="opening"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                        <tr><td colspan="2" class="pt-3"/></tr>
+
+                        <t t-foreach="sections" t-as="section">
+                            <t t-call="at_account_accountant.statement_section_block"/>
+                        </t>
+
+                        <tr t-if="not currency.is_zero(unclassified)">
+                            <td class="ps-4"><em>Unclassified Movements</em></td>
+                            <td class="text-end">
+                                <span t-esc="unclassified"
+                                      t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+
+                        <tr class="border-top border-black">
+                            <td><strong>NET CHANGE IN CASH</strong></td>
+                            <td class="text-end">
+                                <strong t-esc="net_change"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                        <tr class="border-black">
+                            <td><strong>Cash at End of Period</strong></td>
+                            <td class="text-end">
+                                <strong t-esc="closing"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p t-if="not reconciles" class="alert alert-warning mt-3">
+                    <strong>Warning:</strong> the classified movements do not add
+                    up to the change in the cash accounts. Check for entries
+                    excluded by the journal or account filters.
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_cash_flow">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="at_account_accountant.report_cash_flow_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_aged_partner_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="text-center">
+                    <h2>
+                        Aged
+                        <span t-if="docs.aged_result_type == 'payable'">Payable</span>
+                        <span t-else="">Receivable</span>
+                    </h2>
+                    <h4><span t-field="docs.company_id.name"/></h4>
+                    <p>As of <strong t-field="docs.date_to"/></p>
+                </div>
+
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Partner</th>
+                            <th t-foreach="bucket_labels" t-as="label"
+                                class="text-end">
+                                <span t-esc="label"/>
+                            </th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="rows" t-as="row">
+                            <td><span t-esc="row['partner_name']"/></td>
+                            <td t-foreach="row['buckets']" t-as="amount"
+                                class="text-end">
+                                <span t-esc="amount"
+                                      t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                            <td class="text-end">
+                                <span t-esc="row['total']"
+                                      t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                        <tr t-if="not rows">
+                            <td colspan="8" class="text-center">
+                                Nothing outstanding.
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot t-if="rows">
+                        <tr class="border-black">
+                            <td><strong>Total</strong></td>
+                            <td t-foreach="bucket_totals" t-as="amount"
+                                class="text-end">
+                                <strong t-esc="amount"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                            <td class="text-end">
+                                <strong t-esc="grand_total"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_aged_partner">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="at_account_accountant.report_aged_partner_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_tax_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="text-center">
+                    <h2>Tax Report</h2>
+                    <h4><span t-field="docs.company_id.name"/></h4>
+                    <p>
+                        <span t-field="docs.date_from"/> to
+                        <span t-field="docs.date_to"/>
+                    </p>
+                </div>
+
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Tax</th>
+                            <th class="text-end">Base Amount</th>
+                            <th class="text-end">Tax Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="sections" t-as="section">
+                            <tr class="table-active">
+                                <td colspan="3">
+                                    <strong t-esc="section['label']"/>
+                                </td>
+                            </tr>
+                            <tr t-foreach="section['rows']" t-as="row">
+                                <td class="ps-4"><span t-esc="row['name']"/></td>
+                                <td class="text-end">
+                                    <span t-esc="row['base']"
+                                          t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-esc="row['amount']"
+                                          t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                </td>
+                            </tr>
+                            <tr t-if="not section['rows']">
+                                <td colspan="3" class="ps-4">
+                                    <em>No taxes recorded.</em>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ps-4">
+                                    <em>Total <span t-esc="section['label']"/></em>
+                                </td>
+                                <td class="text-end border-top">
+                                    <span t-esc="section['total']"
+                                          t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-black">
+                            <td colspan="2"><strong>NET TAX DUE</strong></td>
+                            <td class="text-end">
+                                <strong t-esc="net_tax"
+                                        t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <p class="text-muted mt-3">
+                    Sales tax collected less purchase tax recovered. This is a
+                    working summary, not a substitute for the statutory return
+                    of any particular jurisdiction.
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_tax">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="at_account_accountant.report_tax_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

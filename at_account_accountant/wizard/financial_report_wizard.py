@@ -13,6 +13,9 @@ class AtFinancialReportWizard(models.TransientModel):
             ("general_ledger", "General Ledger"),
             ("balance_sheet", "Balance Sheet"),
             ("profit_loss", "Profit & Loss"),
+            ("cash_flow", "Cash Flow Statement"),
+            ("aged_partner", "Aged Partner Balance"),
+            ("tax_report", "Tax Report"),
         ],
         string="Report",
         required=True,
@@ -52,6 +55,15 @@ class AtFinancialReportWizard(models.TransientModel):
         "account.account",
         string="Accounts",
         help="Leave empty to include every account.",
+    )
+    aged_result_type = fields.Selection(
+        [
+            ("receivable", "Receivable"),
+            ("payable", "Payable"),
+        ],
+        string="Aged Balance For",
+        required=True,
+        default="receivable",
     )
     hide_zero_balance = fields.Boolean(
         string="Hide Accounts at Zero",
@@ -115,6 +127,9 @@ class AtFinancialReportWizard(models.TransientModel):
         "general_ledger": "at_account_accountant.action_report_general_ledger",
         "balance_sheet": "at_account_accountant.action_report_balance_sheet",
         "profit_loss": "at_account_accountant.action_report_profit_loss",
+        "cash_flow": "at_account_accountant.action_report_cash_flow",
+        "aged_partner": "at_account_accountant.action_report_aged_partner",
+        "tax_report": "at_account_accountant.action_report_tax",
     }
 
     def print_report(self):

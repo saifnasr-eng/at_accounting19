@@ -27,6 +27,10 @@ Available now
     previous-year and current-year earnings reclassified into equity
   - Profit & Loss — income, cost of revenue and expenses, with gross and
     net profit
+  - Cash Flow Statement — operating, investing and financing activities,
+    derived from the counterpart of every entry that touched cash
+  - Aged Partner Balance — receivable or payable, bucketed by days overdue
+  - Tax Report — base and tax amounts per sales and purchase tax
 
 Planned scope
 -------------
@@ -34,7 +38,6 @@ Planned scope
 * Deferred revenue and deferred expense
 * Bank statement reconciliation widget
 * Customer follow-up levels and reminder letters
-* Remaining financial reports: Cash Flow, Aged Partner Balance, Tax Report
 
 This module is an independent implementation. It is not affiliated with,
 endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
@@ -49,6 +52,7 @@ endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
         "security/ir.model.access.csv",
         "report/report_templates.xml",
         "report/statement_templates.xml",
+        "report/analysis_templates.xml",
         "report/report_actions.xml",
         "wizard/financial_report_wizard_views.xml",
     ],

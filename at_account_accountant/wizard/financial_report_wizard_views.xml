@@ -10,7 +10,7 @@
                     <group>
                         <field name="report_type"/>
                         <field name="date_from"
-                               invisible="report_type == 'balance_sheet'"/>
+                               invisible="report_type in ('balance_sheet', 'aged_partner')"/>
                         <field name="date_to"/>
                     </group>
                     <group>
@@ -18,6 +18,8 @@
                                groups="base.group_multi_company"
                                options="{'no_create': True}"/>
                         <field name="target_move"/>
+                        <field name="aged_result_type"
+                               invisible="report_type != 'aged_partner'"/>
                         <field name="hide_zero_balance"/>
                     </group>
                 </group>
