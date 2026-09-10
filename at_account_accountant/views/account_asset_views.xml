@@ -139,10 +139,13 @@
                         domain="[('asset_type', '=', 'sale')]"/>
                 <filter name="filter_expense" string="Deferred Expense"
                         domain="[('asset_type', '=', 'expense')]"/>
-                <group expand="0" string="Group By">
-                    <filter name="group_type" string="Type"
+                <separator/>
+                <field name="asset_type"/>
+                <field name="state"/>
+                <group>
+                    <filter name="group_type" string="Type" domain=""
                             context="{'group_by': 'asset_type'}"/>
-                    <filter name="group_state" string="Status"
+                    <filter name="group_state" string="Status" domain=""
                             context="{'group_by': 'state'}"/>
                 </group>
             </search>

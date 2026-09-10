@@ -104,34 +104,50 @@ odoo -d <db> -i at_account_accountant
 
 ## Testing status
 
-**Nothing here has been run against a live Odoo 19 instance.** No Odoo runtime
-was available where it was written. Treat first install as the real test.
+Verified on a real **Odoo 19.0 FINAL** install (PostgreSQL 16), on a database
+named `cars` loaded with Odoo's demo data:
 
-What *has* been verified:
+- Module installs cleanly: `-i at_account_accountant` exits 0
+- **19/19 unit tests pass** (`--test-enable --test-tags /at_account_accountant`)
+- **All 7 reports render** to HTML against the demo ledger, 21-113 KB each
+- On the full demo ledger the statements reconcile:
+
+  | Check | Result |
+  |---|---|
+  | Balance sheet: assets vs. liabilities + equity | 54,574.00 vs. 54,574.00 — difference 0.00 |
+  | Trial balance: debits vs. credits | 233,541.74 vs. 233,541.74 — difference 0.00 |
+  | Cash flow: classified movements vs. change in cash | reconciles, 0.00 unclassified |
+
+Static checks, which need no Odoo runtime:
 
 ```bash
 python3 tools/validate_module.py
 ```
 
-Checks that the manifest parses, every declared data file exists, all Python
-compiles, all XML is well-formed, and every internal xmlid, `report_name`,
-report `AbstractModel`, `report_type` and `model_id` reference resolves to
-something real. The depreciation board arithmetic was additionally replayed
-outside Odoo across six cases (even splits, rounding remainders, declining
-balance, single period) — every board totals its depreciable value to the cent.
+Reproducing the live run:
 
-What has **not** been verified, in rough order of risk:
+```bash
+odoo -d <db> --addons-path=<odoo>/addons,<clone-parent> \
+     -i at_account_accountant --stop-after-init
+odoo -d <db> --addons-path=... -u at_account_accountant \
+     --test-enable --test-tags /at_account_accountant --stop-after-init
+```
 
-1. **External references.** `account.menu_finance`,
-   `account.menu_finance_reports`, `account.menu_finance_configuration`,
-   `account.group_account_readonly` / `_user` / `_manager`,
-   `base.view_partner_form`, `base.group_multi_company`. If any moved in 19.0,
-   install fails loudly and the fix is a line each.
-2. **API surface.** `_read_group` aggregate tuples, `compute_fiscalyear_dates`,
-   `account_type` values, `<chatter/>`, and `list`-vs-`tree` view tags are all
-   used as of the 17→19 conventions.
-3. **The test suite itself** has never executed. Run it with:
-   `odoo -d <db> -i at_account_accountant --test-enable --stop-after-init`
+### Fixed during the live run
+
+Four things only a real install could catch, all now fixed:
+
+1. `ir.cron.numbercall` no longer exists in 19.0 — removed from the cron record
+2. `<group expand="0" string="...">` is rejected by the search-view schema in
+   19.0 — the group-by block now follows the core `account` module's shape
+3. `ir.actions.report.report_action()` returns the *layout configurator* wizard,
+   not the report, the first time a company prints anything — expected Odoo
+   behaviour, so the test opts out with `discard_logo_check`
+4. `_()` inside a list comprehension cannot resolve the language, because the
+   comprehension gets its own frame — switched to `self.env._()`
+
+The report tests originally measured the demo ledger rather than their own
+fixtures; they now run inside a company created by the test.
 
 ## Not built
 

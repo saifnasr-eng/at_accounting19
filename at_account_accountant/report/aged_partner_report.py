@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, models
+from odoo import api, models
 from odoo.tools import float_is_zero
 
 # Bucket labels, in the order _bucket_index returns. Kept as plain strings:
@@ -92,7 +92,9 @@ class ReportAgedPartner(models.AbstractModel):
             "doc_model": "at.financial.report.wizard",
             "docs": wizard,
             "currency": currency,
-            "bucket_labels": [_(label) for label in AGE_BUCKET_LABELS],
+            # env._ rather than _(): a list comprehension gets its own frame,
+            # and the bare alias resolves the language by inspecting the caller's.
+            "bucket_labels": [self.env._(label) for label in AGE_BUCKET_LABELS],
             "rows": rows,
             "bucket_totals": totals,
             "grand_total": sum(totals),

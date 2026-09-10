@@ -27,6 +27,7 @@ class TestFinancialReports(AtAccountingCase):
     def _post_entry(cls, date, lines):
         move = cls.env["account.move"].create({
             "journal_id": cls.journal.id,
+            "company_id": cls.company.id,
             "date": date,
             "line_ids": [
                 (0, 0, {
@@ -128,5 +129,7 @@ class TestFinancialReports(AtAccountingCase):
         )
         for report_type in selection:
             wizard = self._wizard(report_type)
-            action = wizard.print_report()
+            # Odoo wraps the report in a layout-configuration wizard the
+            # first time a company prints anything, so opt out of that check.
+            action = wizard.with_context(discard_logo_check=True).print_report()
             self.assertEqual(action["type"], "ir.actions.report")

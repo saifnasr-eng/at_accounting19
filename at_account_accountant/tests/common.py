@@ -3,12 +3,24 @@ from odoo.tests.common import TransactionCase
 
 
 class AtAccountingCase(TransactionCase):
-    """Shared fixtures: a journal and one account per type the tests need."""
+    """Shared fixtures for the module's tests.
+
+    Everything runs inside a company created here rather than the database's
+    own. The reports aggregate every entry a company has, so running them
+    against a database carrying demo data would measure the demo ledger
+    instead of the fixtures.
+    """
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.company = cls.env.company
+
+        cls.company = cls.env["res.company"].create({"name": "AT Test Company"})
+        cls.env.user.company_ids = [(4, cls.company.id)]
+        cls.env.user.company_id = cls.company
+        cls.env = cls.env(context=dict(
+            cls.env.context, allowed_company_ids=cls.company.ids
+        ))
         cls.currency = cls.company.currency_id
 
         cls.journal = cls.env["account.journal"].create({
@@ -34,6 +46,7 @@ class AtAccountingCase(TransactionCase):
             "code": code,
             "name": name,
             "account_type": account_type,
+            "company_ids": [(6, 0, cls.company.ids)],
         })
 
     def _make_asset(self, **overrides):
@@ -45,6 +58,7 @@ class AtAccountingCase(TransactionCase):
             "method_period": "1",
             "method": "linear",
             "date_start": "2026-01-01",
+            "company_id": self.company.id,
             "journal_id": self.journal.id,
             "account_asset_id": self.account_asset.id,
             "account_depreciation_id": self.account_depreciation.id,
