@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_trial_balance" model="ir.actions.report">
+        <field name="name">Trial Balance</field>
+        <field name="model">at.financial.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">at_account_accountant.report_trial_balance</field>
+        <field name="report_file">at_account_accountant.report_trial_balance</field>
+        <field name="binding_model_id" eval="False"/>
+        <field name="print_report_name">'Trial Balance - %s' % (object.date_to)</field>
+    </record>
+
+    <record id="action_report_general_ledger" model="ir.actions.report">
+        <field name="name">General Ledger</field>
+        <field name="model">at.financial.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">at_account_accountant.report_general_ledger</field>
+        <field name="report_file">at_account_accountant.report_general_ledger</field>
+        <field name="binding_model_id" eval="False"/>
+        <field name="print_report_name">'General Ledger - %s' % (object.date_to)</field>
+    </record>
+
+</odoo>

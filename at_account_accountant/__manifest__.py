@@ -15,14 +15,20 @@ AT Full Accounting
 Adds the accounting capabilities that ship with the Enterprise edition of Odoo
 to a Community installation, on top of the standard ``account`` module.
 
+Available now
+-------------
+* Financial reports: Trial Balance and General Ledger, with initial balance,
+  period movement and closing balance per account. Filter by date range,
+  journal, account and posted/all entries. Printable as PDF.
+
 Planned scope
 -------------
 * Asset management (depreciation boards, disposal, revaluation)
 * Deferred revenue and deferred expense
 * Bank statement reconciliation widget
 * Customer follow-up levels and reminder letters
-* Financial reports: Balance Sheet, Profit & Loss, Cash Flow, Aged Partner
-  Balance, General Ledger, Trial Balance, Tax Report
+* Remaining financial reports: Balance Sheet, Profit & Loss, Cash Flow,
+  Aged Partner Balance, Tax Report
 
 This module is an independent implementation. It is not affiliated with,
 endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
@@ -34,6 +40,10 @@ endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
         "account",
     ],
     "data": [
+        "security/ir.model.access.csv",
+        "report/report_templates.xml",
+        "report/report_actions.xml",
+        "wizard/financial_report_wizard_views.xml",
     ],
     "installable": True,
     "application": False,

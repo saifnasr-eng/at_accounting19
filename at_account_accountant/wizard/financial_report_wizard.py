@@ -1,0 +1,105 @@
+# -*- coding: utf-8 -*-
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+
+
+class AtFinancialReportWizard(models.TransientModel):
+    _name = "at.financial.report.wizard"
+    _description = "Financial Report Options"
+
+    report_type = fields.Selection(
+        [
+            ("trial_balance", "Trial Balance"),
+            ("general_ledger", "General Ledger"),
+        ],
+        string="Report",
+        required=True,
+        default="trial_balance",
+    )
+    company_id = fields.Many2one(
+        "res.company",
+        string="Company",
+        required=True,
+        default=lambda self: self.env.company,
+    )
+    date_from = fields.Date(
+        string="Start Date",
+        required=True,
+        default=lambda self: self._default_fiscalyear_dates()["date_from"],
+    )
+    date_to = fields.Date(
+        string="End Date",
+        required=True,
+        default=lambda self: self._default_fiscalyear_dates()["date_to"],
+    )
+    target_move = fields.Selection(
+        [
+            ("posted", "Posted Entries Only"),
+            ("all", "All Entries"),
+        ],
+        string="Target Moves",
+        required=True,
+        default="posted",
+    )
+    journal_ids = fields.Many2many(
+        "account.journal",
+        string="Journals",
+        help="Leave empty to include every journal.",
+    )
+    account_ids = fields.Many2many(
+        "account.account",
+        string="Accounts",
+        help="Leave empty to include every account.",
+    )
+    hide_zero_balance = fields.Boolean(
+        string="Hide Accounts at Zero",
+        default=True,
+        help="Skip accounts with no initial balance, no movement and no "
+             "closing balance over the period.",
+    )
+
+    @api.model
+    def _default_fiscalyear_dates(self):
+        """Current fiscal year of the active company, not the calendar year."""
+        today = fields.Date.context_today(self)
+        return self.env.company.compute_fiscalyear_dates(today)
+
+    @api.constrains("date_from", "date_to")
+    def _check_dates(self):
+        for wizard in self:
+            if wizard.date_from > wizard.date_to:
+                raise ValidationError(
+                    _("The start date must not be after the end date.")
+                )
+
+    def _base_domain(self):
+        """Domain shared by the initial-balance and period queries."""
+        self.ensure_one()
+        domain = [("company_id", "=", self.company_id.id)]
+        if self.target_move == "posted":
+            domain.append(("parent_state", "=", "posted"))
+        else:
+            domain.append(("parent_state", "in", ("draft", "posted")))
+        if self.journal_ids:
+            domain.append(("journal_id", "in", self.journal_ids.ids))
+        if self.account_ids:
+            domain.append(("account_id", "in", self.account_ids.ids))
+        return domain
+
+    def _period_domain(self):
+        return self._base_domain() + [
+            ("date", ">=", self.date_from),
+            ("date", "<=", self.date_to),
+        ]
+
+    def _initial_domain(self):
+        return self._base_domain() + [("date", "<", self.date_from)]
+
+    def print_report(self):
+        self.ensure_one()
+        report_name = (
+            "at_account_accountant.action_report_trial_balance"
+            if self.report_type == "trial_balance"
+            else "at_account_accountant.action_report_general_ledger"
+        )
+        return self.env.ref(report_name).report_action(self)
