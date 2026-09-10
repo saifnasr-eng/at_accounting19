@@ -2,7 +2,7 @@
 {
     "name": "Full Accounting for Odoo Community - Financial Reports, Assets, "
             "Deferrals and Follow-ups",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Accounting/Accounting",
     # Bank reconciliation is deliberately absent from this line: the module
     # does not implement it, and the description says so under "Not included".
