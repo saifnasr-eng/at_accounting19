@@ -35,11 +35,11 @@ Available now
 * Asset management — straight-line and declining-balance depreciation boards,
   posted to journal entries manually or by a scheduled action
 * Deferred revenue and deferred expense, sharing the same board mechanics
+* Customer follow-up levels, with a reminder posted to the partner's chatter
 
 Planned scope
 -------------
 * Bank statement reconciliation widget
-* Customer follow-up levels and reminder letters
 
 This module is an independent implementation. It is not affiliated with,
 endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
@@ -60,6 +60,7 @@ endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
         "report/report_actions.xml",
         "wizard/financial_report_wizard_views.xml",
         "views/account_asset_views.xml",
+        "views/account_followup_views.xml",
     ],
     "installable": True,
     "application": False,
