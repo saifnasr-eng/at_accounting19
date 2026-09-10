@@ -47,7 +47,12 @@ endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
 """,
     "author": "Saif Nasr — Scalebox",
     "website": "https://github.com/saifnasr-eng/at_accounting19",
-    "license": "LGPL-3",
+    # OPL-1 (Odoo Proprietary License) rather than LGPL-3: LGPL lets anyone
+    # redistribute the module for free, which cannot coexist with selling it.
+    "license": "OPL-1",
+    "price": 150.00,
+    "currency": "USD",
+    "support": "saifnasr100.sn@gmail.com",
     "depends": [
         "account",
     ],

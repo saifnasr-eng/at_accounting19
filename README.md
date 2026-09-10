@@ -2,7 +2,7 @@
 
 **AT Full Accounting** — Enterprise accounting features for Odoo 19 Community.
 
-Technical name: `at_account_accountant` · Version: `19.0.1.0.0` · License: LGPL-3
+Technical name: `at_account_accountant` · Version: `19.0.1.0.0` · License: OPL-1 · Price: $150 USD
 
 ## What this is
 
@@ -180,8 +180,20 @@ fixtures; they now run inside a company the test creates.
   original scope deliberately left out. Community installs keep Odoo's own
   statement reconciliation.
 
+## Licensing
+
+Published under **OPL-1** (Odoo Proprietary License v1.0), not LGPL-3. LGPL
+permits anyone to redistribute the module for free, which is incompatible with
+selling it. The manifest carries `price` and `currency` so Odoo Apps lists it
+at $150 USD.
+
+The `LICENSE` file must contain the official OPL-1 text from
+<https://www.odoo.com/documentation/19.0/legal/licenses.html> — it could not be
+fetched from the build environment, so add it before publishing.
+
 ## Before publishing to Odoo Apps
 
+- Add the `LICENSE` file with the official OPL-1 text
 - Confirm `at_account_accountant` is free at
   `https://apps.odoo.com/apps/modules/19.0/at_account_accountant/` (404 means
   available). This could not be checked from the build environment.
