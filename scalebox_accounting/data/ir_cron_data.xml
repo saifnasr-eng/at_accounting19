@@ -7,6 +7,9 @@
         <field name="code">model._cron_post_depreciation()</field>
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
+        <!-- Present in 17 (removed in 19); the default of 1 would run the job
+             once and never again, so -1 for no limit. -->
+        <field name="numbercall">-1</field>
         <field name="active" eval="False"/>
     </record>
 </odoo>

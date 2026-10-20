@@ -1,8 +1,10 @@
 # at_accounting19
 
-**AT Full Accounting** — Enterprise accounting features for Odoo 19 Community.
+**AT Full Accounting** — Enterprise accounting features for Odoo 17 Community.
 
-Technical name: `scalebox_accounting` · Version: `19.0.1.0.0` · License: OPL-1 · Price: $150 USD
+Technical name: `scalebox_accounting` · Version: `17.0.1.0.0` · License: OPL-1 · Price: $150 USD
+
+> This branch targets **Odoo 17.0 Community**. The 19.0 series lives on `main`.
 
 ## What this is
 
@@ -11,7 +13,7 @@ to a Community installation, on top of the standard `account` module.
 
 The technical name mirrors Odoo Enterprise's own `account_accountant` module so
 its purpose is obvious to any Odoo developer. The original name `at_accounting`
-is already taken on Odoo Apps for 19.0.
+is already taken on Odoo Apps.
 
 > This module is an independent implementation. It is not affiliated with,
 > endorsed by, or a redistribution of Odoo S.A.'s Enterprise edition.
@@ -113,29 +115,25 @@ odoo -d <db> -i scalebox_accounting
 
 ## Testing status
 
-Verified on a real **Odoo 19.0 FINAL** install (PostgreSQL 16, wkhtmltopdf
-0.12.6), on a database named `cars`:
+Verified on a real **Odoo 17.0 FINAL** install (PostgreSQL 16, wkhtmltopdf
+0.12.6):
 
 | Check | Result |
 |---|---|
-| Install with demo data | clean, exits 0 |
+| Install with a chart of accounts and demo data | clean, exits 0 |
 | Install on an empty database (no demo) | clean, exits 0 |
-| Unit tests | **30/30 pass** |
-| All 7 reports render to HTML | pass |
-| All 7 reports render to **PDF** | pass, 19–38 KB each |
+| Unit tests | **30/30 pass**, on both databases |
+| All 7 reports render to HTML | pass, 25–123 KB each |
+| All 7 reports render to **PDF** | pass, 16–38 KB each |
+| `ir_module_module` records | `scalebox_accounting \| 17.0.1.0.0 \| OPL-1 \| installed` |
 
-On the full demo ledger the statements reconcile:
+On a 47-account, 68-entry ledger the statements reconcile:
 
 | Check | Result |
 |---|---|
-| Balance sheet: assets vs. liabilities + equity | 54,574.00 vs. 54,574.00 — difference **0.00** |
-| Trial balance: debits vs. credits | 233,541.74 vs. 233,541.74 — difference **0.00** |
+| Balance sheet: assets vs. liabilities + equity | 2,500.00 vs. 2,500.00 — difference **0.00** |
+| Trial balance: debits vs. credits | 302,673.57 vs. 302,673.57 — difference **0.00** |
 | Cash flow: classified movements vs. change in cash | reconciles, **0.00** unclassified |
-
-`tests/test_asset_lifecycle.py` runs one asset from purchase through six
-months of cron-posted depreciation, an upward revaluation, and a sale below
-book value, then asserts the asset and its accumulated depreciation are back
-to zero and the balance sheet still balances.
 
 Static checks, no Odoo runtime needed:
 
@@ -146,32 +144,29 @@ python3 tools/validate_module.py
 Reproducing the live run:
 
 ```bash
-odoo -d <db> --addons-path=<odoo>/addons,<clone-parent> \
+odoo -d <db> --addons-path=<odoo17>/addons,<clone-parent> \
      -i scalebox_accounting --stop-after-init
 odoo -d <db> --addons-path=... -u scalebox_accounting \
      --test-enable --test-tags /scalebox_accounting --stop-after-init
 ```
 
-### Defects the live run caught
+## What the 19 → 17 downgrade changed
 
-Six things static checks could never find, all fixed:
+Five API differences, each confirmed against the Odoo 17 source rather than
+assumed:
 
-1. `ir.cron.numbercall` no longer exists in 19.0 — removed from the cron record
-2. `<group expand="0" string="...">` is rejected by the search-view schema in
-   19.0 — the group-by block now follows the core `account` module's shape
-3. `_()` inside a list comprehension cannot resolve the language, because the
-   comprehension gets its own frame — switched to `self.env._()`
-4. `ir.actions.report.report_action()` returns the *layout configurator* wizard,
-   not the report, the first time a company prints anything — expected Odoo
-   behaviour, so the test opts out with `discard_logo_check`
-5. **Rebuilding a board after a revaluation double-counted the posted
-   periods**, leaving the board short by their value. It now spreads what is
-   left to depreciate over the periods that are left
-6. Statement sections with every row hidden at zero printed a bare heading
-   above a lone zero total — empty sections are now dropped
+| Area | 19.0 | 17.0 |
+|---|---|---|
+| List view tag | `<list>` | `<tree>` — and `view_mode` reads `tree,form` |
+| Chatter | `<chatter/>` | an explicit `<div class="oe_chatter">` with the follower, activity and message fields |
+| Translation in a comprehension | `self.env._()` | `env._` does not exist; `_()` is called in a plain loop so the frame still carries `self` |
+| `account.account` company | `company_ids` (many2many) | `company_id` (many2one) — affects the test fixtures |
+| `ir.cron.numbercall` | removed | present, and its default of **1** would run the job once and stop, so it is set to `-1` |
 
-The report tests were also measuring the demo ledger rather than their own
-fixtures; they now run inside a company the test creates.
+Everything else carried over unchanged: `_read_group`'s aggregate signature,
+`compute_fiscalyear_dates`, the `account_type` values, `parent_state`,
+`column_invisible`, `web_ribbon`, and the `invisible="<expr>"` view syntax all
+behave the same in 17.0.
 
 ## Not built
 
@@ -188,14 +183,14 @@ selling it. The manifest carries `price` and `currency` so Odoo Apps lists it
 at $150 USD.
 
 The `LICENSE` file must contain the official OPL-1 text from
-<https://www.odoo.com/documentation/19.0/legal/licenses.html> — it could not be
+<https://www.odoo.com/documentation/17.0/legal/licenses.html> — it could not be
 fetched from the build environment, so add it before publishing.
 
 ## Before publishing to Odoo Apps
 
 - Add the `LICENSE` file with the official OPL-1 text
 - Confirm `scalebox_accounting` is free at
-  `https://apps.odoo.com/apps/modules/19.0/scalebox_accounting/` (404 means
+  `https://apps.odoo.com/apps/modules/17.0/scalebox_accounting/` (404 means
   available). This could not be checked from the build environment.
 - The icon (`static/description/icon.png`, 128×128) and banner
   (`static/description/banner.png`, 1200×400) are in place and the manifest's

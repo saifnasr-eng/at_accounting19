@@ -46,7 +46,8 @@ class AtAccountingCase(TransactionCase):
             "code": code,
             "name": name,
             "account_type": account_type,
-            "company_ids": [(6, 0, cls.company.ids)],
+            # Single-company in 17; company_ids (many2many) arrives in 18.
+            "company_id": cls.company.id,
         })
 
     def _make_asset(self, **overrides):

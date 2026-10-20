@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_at_account_asset_list" model="ir.ui.view">
-        <field name="name">at.account.asset.list</field>
+    <record id="view_at_account_asset_tree" model="ir.ui.view">
+        <field name="name">at.account.asset.tree</field>
         <field name="model">at.account.asset</field>
         <field name="arch" type="xml">
-            <list string="Assets" decoration-muted="state in ('cancelled', 'disposed')"
+            <tree string="Assets" decoration-muted="state in ('cancelled', 'disposed')"
                   decoration-success="state == 'running'">
                 <field name="name"/>
                 <field name="asset_type"/>
@@ -17,7 +17,7 @@
                 <field name="state" widget="badge"
                        decoration-success="state == 'running'"
                        decoration-info="state == 'draft'"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -103,7 +103,7 @@
                         <page string="Depreciation Board"
                               name="depreciation_board">
                             <field name="depreciation_line_ids" readonly="1">
-                                <list decoration-success="move_posted">
+                                <tree decoration-success="move_posted">
                                     <field name="sequence" string="#"/>
                                     <field name="date"/>
                                     <field name="amount"/>
@@ -117,7 +117,7 @@
                                             type="object" icon="fa-check"
                                             title="Post this period"
                                             invisible="move_id"/>
-                                </list>
+                                </tree>
                             </field>
                         </page>
                         <page string="Disposal" name="disposal"
@@ -130,7 +130,11 @@
                         </page>
                     </notebook>
                 </sheet>
-                <chatter/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -173,7 +177,7 @@
     <record id="action_at_account_asset" model="ir.actions.act_window">
         <field name="name">Assets</field>
         <field name="res_model">at.account.asset</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="context">{'search_default_filter_purchase': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Record your first asset</p>
@@ -187,7 +191,7 @@
     <record id="action_at_deferred_revenue" model="ir.actions.act_window">
         <field name="name">Deferred Revenue</field>
         <field name="res_model">at.account.asset</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="domain">[('asset_type', '=', 'sale')]</field>
         <field name="context">{'default_asset_type': 'sale'}</field>
     </record>
@@ -195,7 +199,7 @@
     <record id="action_at_deferred_expense" model="ir.actions.act_window">
         <field name="name">Deferred Expense</field>
         <field name="res_model">at.account.asset</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="domain">[('asset_type', '=', 'expense')]</field>
         <field name="context">{'default_asset_type': 'expense'}</field>
     </record>
